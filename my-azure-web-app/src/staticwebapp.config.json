@@ -1,8 +1,6 @@
 {"forwardingGateway": {
   "allowedForwardedHosts": [
-    "example.org",
-    "www.example.org",
-    "staging.example.org"
+    "wonderful-water-0f8c71f00.2.azurestaticapps.net"
   ]
 }
 }
