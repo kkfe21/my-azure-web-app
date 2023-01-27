@@ -1,0 +1,7 @@
+"forwardingGateway": {
+  "allowedForwardedHosts": [
+    "example.org",
+    "www.example.org",
+    "staging.example.org"
+  ]
+}
