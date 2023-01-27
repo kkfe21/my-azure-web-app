@@ -1,13 +1,7 @@
 {
 	"forwardingGateway": {
 		"allowedForwardedHosts": [
-			"wonderful-water-0f8c71f00.2.azurestaticapps.net",
-			"20.200.219.146"
+			"wonderful-water-0f8c71f00.2.azurestaticapps.net"
   ]
-},
-{
-  "navigationFallback": {
-    "rewrite": "/index.html"
-  }
 }
 }
