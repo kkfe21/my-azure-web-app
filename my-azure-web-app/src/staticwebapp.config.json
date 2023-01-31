@@ -1,7 +1,8 @@
 {
 	"forwardingGateway": {
 		"allowedForwardedHosts": [
-			"wonderful-water-0f8c71f00.2.azurestaticapps.net"
+			"thankful-sand-096fb8600.2.azurestaticapps.net",
+			"*"
   ]
 }
 }
