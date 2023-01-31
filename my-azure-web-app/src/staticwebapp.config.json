@@ -2,7 +2,8 @@
 	"forwardingGateway": {
 		"allowedForwardedHosts": [
 			"thankful-sand-096fb8600.2.azurestaticapps.net",
-			"ashy-sea-016e86f00.2.azurestaticapps.net"
+			"ashy-sea-016e86f00.2.azurestaticapps.net",
+			"polite-coast-0e1063100.2.azurestaticapps.net"
   ]
 }
 }
