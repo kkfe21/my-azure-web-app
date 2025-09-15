@@ -1,0 +1,78 @@
+name: Custom Commands
+on:
+    issue_comment:
+        types:
+            [
+                created,
+            ]
+
+jobs:
+    slash_commands:
+        if: github.event.issue.pull_request
+        runs-on: ubuntu-latest
+        permissions:
+            issues: write
+            pull-requests: write
+            contents: read
+        steps:
+            - name: Handle slash commands
+              uses: actions/github-script@v7
+              with:
+                  script:
+                      |
+                      const comment = context.payload.comment.body.trim();
+                      const issueNumber = context.issue.number;
+                      const commenter = context.payload.comment.user.login;
+                      const prAuthor = context.payload.issue.user.login;
+
+                      // 공통 반응 함수
+                      async function addReaction(content) {
+                        await github.rest.reactions.createForIssueComment({
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          comment_id: context.payload.comment.id,
+                          content: content
+                        });
+                      }
+
+                      // 공통 댓글 함수
+                      async function addComment(body) {
+                        await github.rest.issues.createComment({
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          issue_number: issueNumber,
+                          body: body
+                        });
+                      }
+
+                      // /lgtm 명령어 - 자동 승인 포함
+                      if (comment === '/lgtm' || comment.startsWith('/lgtm ')) {
+                        await addReaction('+1');
+                        const message = comment.length > 5 ? comment.substring(6) : '';
+                        
+                        // 본인 PR은 승인할 수 없으므로 체크
+                        if (commenter === prAuthor) {
+                          await addComment('⚠️ **자신의 PR은 승인할 수 없습니다**\n\n다른 팀원의 리뷰를 받아주세요! 🙏');
+                          return;
+                        }
+                        
+                        try {
+                          // PR 리뷰로 승인 생성
+                          await github.rest.pulls.createReview({
+                            owner: context.repo.owner,
+                            repo: context.repo.repo,
+                            pull_number: issueNumber,
+                            event: 'APPROVE',
+                            body: '✅ **LGTM!** Looks Good To Me 👍\n\nApproved by @' + commenter + (message ? '\n\n**Comment:** ' + message : '')
+                          });
+                          
+                          // 성공 알림 댓글
+                          await addComment('🚀 **자동 승인 완료!**\n\n✅ PR이 @' + commenter + '에 의해 승인되었습니다.' + (message ? '\n\n**코멘트:** ' + message : '') + '\n\n머지 준비 완료! 🎉');
+                          
+                        } catch (error) {
+                          // 승인 실패시 (이미 승인했거나 권한 없음 등)
+                          console.log('Review creation failed:', error);
+                          await addComment('✅ **LGTM!** Looks Good To Me 👍\n\nApproved by @' + commenter + (message ? '\n\n**Comment:** ' + message : '') + '\n\n*Note: 자동 승인은 실패했지만 LGTM은 기록되었습니다.*');
+                        }
+                      }
+
